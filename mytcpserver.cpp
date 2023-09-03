@@ -1,42 +1,37 @@
 #include "mytcpserver.h"
+#include "mythread.h"
 
 MyTcpServer::MyTcpServer(QObject *parent) :
-    QObject(parent)
+    QTcpServer(parent)
 {
-    server = new QTcpServer(this);
+}
 
-    // whenever a user connects, it will emit signal
-    connect(server, SIGNAL(newConnection()),
-            this, SLOT(newConnection()));
+void MyTcpServer::startServer()
+{
+    int port = TCP_PORT;
 
-    if(!server->listen(QHostAddress::Any, 2399))
+    if(!this->listen(QHostAddress::Any, port))
     {
-        qDebug() << "Server could not start";
+        qDebug() << "Could not start server";
     }
     else
     {
-        qDebug() << "Server started!";
+        qDebug() << "Listening to port " << port << "...";
     }
 }
 
-void MyTcpServer::newConnection()
+// This function is called by QTcpServer when a new connection is available.
+void MyTcpServer::incomingConnection(qintptr socketDescriptor)
 {
-    // need to grab the socket
-    QTcpSocket *socket = server->nextPendingConnection();
+    // We have a new connection
+    qDebug() << socketDescriptor << " Connecting...";
 
-    socket->write("Hello client\r\n");
-    socket->flush();
+    // Every new connection will be run in a newly created thread
+    MyThread *thread = new MyThread(socketDescriptor, this);
 
-    socket->waitForBytesWritten(3000);
+    // connect signal/slot
+    // once a thread is not needed, it will be beleted later
+    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
-    QByteArray rx = "0";
-    while(rx != "")
-    {
-        socket->waitForReadyRead(3000);
-        rx = socket->readAll();
-
-        qDebug() << rx;
-    }
-
-    socket->close();
+    thread->start();
 }

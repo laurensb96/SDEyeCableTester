@@ -14,31 +14,35 @@ Window {
     color: "#d4d4d4"
     title: qsTr("Hello World")
 
+
     MyBackend{
         id: backend
+        onValChanged: {
+            text1.text = backend.val * 10.0
+        }
     }
 
     Rectangle {
         x: 20
-        y: 200
+        y: 160
         width: 120
-        height: 260
+        height: 300
         color: "#a0a0a0"
         radius: 20
     }
 
     Rectangle {
         x: 660
-        y: 200
+        y: 160
         width: 120
-        height: 260
+        height: 300
         color: "#a0a0a0"
         radius: 20
     }
 
     Text {
         x: 680
-        y: 200
+        y: 160
         width: 80
         height: 40
         text: qsTr("SIDE 2")
@@ -62,18 +66,18 @@ Window {
     Column {
         id: column
         x: 70
-        y: 230
+        y: 200
         width: 600
         height: 400
         clip: false
         spacing: 0
 
-        property variant cableNames: ["PWR1+","PWR1-","PWR2+","PWR2-","CTRL1","CTRL2"]
-        property variant cableColors: ["#ff0000","#ffffff","#ff0000","#ffffff","#00ff00","#00ff00"]
+        property variant cableNames: ["PWR1+","PWR1-","PWR2+","PWR2-","CTRL1","CTRL2","FIB1","FIB2"]
+        property variant cableColors: ["#ff0000","#ffffff","#ff0000","#ffffff","#00ff00","#00ff00","#7800ff","#7800ff"]
 
         Repeater {
             id: repeater
-            model: 6
+            model: 8
 
             Item {
                 id: item2
@@ -131,7 +135,7 @@ Window {
 
     Text {
         x: 40
-        y: 200
+        y: 160
         width: 80
         height: 40
         text: qsTr("SIDE 1")
@@ -141,28 +145,8 @@ Window {
         font.bold: true
     }
 
-    Rectangle {
-        id: rectangle2
-        x: 270
-        y: 242
-        width: 288
-        height: 10
-        color: "#c1c946"
-        transformOrigin: Item.TopLeft
-        rotation: 90
-    }
 
-    Rectangle {
-        id: rectangle3
-        x: rectangle2.x + 30
-        y: rectangle2.y + 30
-        width: 288
-        height: 10
-        color: "#efff00"
-        rotation: 90
-        transformOrigin: Item.TopLeft
-    }
-    
+
     Dial {
         id: dial
         x: 660
@@ -177,6 +161,74 @@ Window {
         to: 10
     }
 
+    Connections {
+        target: window
+        onAfterRendering: backend.appState = true
+    }
+
+    Text {
+        id: text1
+        x: 193
+        y: 72
+        width: 89
+        height: 52
+        text: qsTr("Text")
+        font.pixelSize: 30
+    }
+
+    Button {
+        id: button
+        x: 396
+        y: 29
+        text: qsTr("Button")
+
+        Connections {
+            target: button
+            onClicked: {
+                console.log("button.clicked")
+                console.log(repeater.itemAt(0).y)
+                console.log(repeater.itemAt(2).y)
+                rectangle3.x = 180
+                rectangle3.y = 242
+                rectangle3.width = repeater.itemAt(2).y - repeater.itemAt(0).y
+            }
+        }
+    }
+
+
+
+
+
+
+
+    Row {
+        id: row
+        x: 170
+        y: 212
+        width: 508
+        height: 238
+        spacing: 20
+
+        Repeater {
+            id: repeater1
+            model: backend.arr.length
+
+            Rectangle {
+                id: rectangle3
+                x: 0
+                y: backend.arr[index][0]*30
+                width: 4
+                height: (backend.arr[index][1]-backend.arr[index][0])*30+width
+                //color: "#efff00"
+                rotation: 0
+                transformOrigin: Item.TopLeft
+                gradient: Gradient {
+                        GradientStop { position: 0.0; color: column.cableColors[backend.arr[index][0]] }
+                        GradientStop { position: 1.0; color: column.cableColors[backend.arr[index][1]] }
+                    }
+            }
+        }
+    }
 
 
 }

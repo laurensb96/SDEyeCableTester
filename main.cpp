@@ -3,8 +3,6 @@
 
 #include <QDebug>
 
-#include "mythread.h"
-#include "mytcpserver.h"
 #include "mybackend.h"
 
 int main(int argc, char *argv[])
@@ -20,14 +18,6 @@ int main(int argc, char *argv[])
         &app, []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
     engine.load(url);
-
-    MyThread thread1("A"), thread2("B"), thread3("C");
-
-    thread1.start();
-    //thread2.start();
-    //thread3.start();
-
-    MyTcpServer server;
 
     qDebug() << "starting app...";
 

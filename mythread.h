@@ -1,19 +1,28 @@
 #ifndef MYTHREAD_H
 #define MYTHREAD_H
+
 #include <QThread>
-#include <QString>
+#include <QTcpSocket>
+#include <QDebug>
 
 class MyThread : public QThread
 {
+    Q_OBJECT
 public:
-    // constructor
-    // set name using initializer
-    explicit MyThread(QString s);
+    explicit MyThread(qintptr ID, QObject *parent = 0);
 
-    // overriding the QThread's run() method
     void run();
+
+signals:
+    void error(QTcpSocket::SocketError socketerror);
+
+public slots:
+    void readyRead();
+    void disconnected();
+
 private:
-    QString name;
+    QTcpSocket *socket;
+    qintptr socketDescriptor;
 };
 
 #endif // MYTHREAD_H
