@@ -25,6 +25,8 @@ qt_add_qml_module(appCableTester
     SOURCES mytcpserver.cpp
     SOURCES mythread.cpp
     SOURCES mybackend.cpp mybackend.h
+    QML_FILES Page1.qml
+    QML_FILES Page2.qml
 )
 
 
